@@ -42,7 +42,7 @@ namespace WebServiceEstacioPay
             }
             catch (Exception e)
             {
-                res = false;                    
+                res = false;
             }
 
             if (con.State == ConnectionState.Open)
@@ -55,8 +55,44 @@ namespace WebServiceEstacioPay
 
 
 
+
+
+        //Metodo para cadastra os usuarios
+        public string Inserir(string cpf, string img, string nome, string telefone, string data_nascimento, string cnh, string email)
+        {
+            string res = "Inserido com sucesso!";
+            SqlConnection con =
+                new SqlConnection(ConfigurationManager.ConnectionStrings["BCD"].ConnectionString);
+            try
+            {
+                con.Open();
+                SqlCommand query =
+                    new SqlCommand("INSERT INTO Cliente VALUES(@cpf, @img, @nome, @telefone, @data_nascimento,@cnh,@email)", con);
+                query.Parameters.AddWithValue("@cpf", cpf);
+                query.Parameters.AddWithValue("@img",img );
+                query.Parameters.AddWithValue("@nome", nome);
+                query.Parameters.AddWithValue("@telefone", telefone);
+                query.Parameters.AddWithValue("@data_nascimento", data_nascimento);
+                query.Parameters.AddWithValue("@cnh", cnh);
+                query.Parameters.AddWithValue("@email", email);
+                query.ExecuteNonQuery();
+            }
+            catch (Exception e)
+            {
+                res = e.Message;
+            }
+
+            if (con.State == System.Data.ConnectionState.Open)
+                con.Close();
+
+            return res;
+        }
+
+
+
+
         //Login para estacionamento
-      
+
         //[WebMethod]
         //public bool Logar2(string email, string senha)
         //{
