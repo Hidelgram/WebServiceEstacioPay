@@ -57,24 +57,22 @@ namespace WebServiceEstacioPay
 
 
 
-        //Metodo para cadastra os usuarios
-        public string Inserir(string cpf, string img, string nome, string telefone, string data_nascimento, string cnh, string email)
+        //Metodo para cadastra contas
+        [WebMethod]
+        [ScriptMethod(ResponseFormat = ResponseFormat.Json)]
+        public string Inserir(string email, string senha, string tipoConta)
         {
             string res = "Inserido com sucesso!";
             SqlConnection con =
-                new SqlConnection(ConfigurationManager.ConnectionStrings["BCD"].ConnectionString);
+               new SqlConnection("Server=ESN509VMSSQL;Database=estaciopay ;User id=Aluno;Password=Senai1234");
             try
             {
                 con.Open();
                 SqlCommand query =
-                    new SqlCommand("INSERT INTO Cliente VALUES(@cpf, @img, @nome, @telefone, @data_nascimento,@cnh,@email)", con);
-                query.Parameters.AddWithValue("@cpf", cpf);
-                query.Parameters.AddWithValue("@img",img );
-                query.Parameters.AddWithValue("@nome", nome);
-                query.Parameters.AddWithValue("@telefone", telefone);
-                query.Parameters.AddWithValue("@data_nascimento", data_nascimento);
-                query.Parameters.AddWithValue("@cnh", cnh);
+                    new SqlCommand("INSERT INTO usuario VALUES(@email, @senha, @tipoConta)", con);                                           
                 query.Parameters.AddWithValue("@email", email);
+                query.Parameters.AddWithValue("@senha", senha);
+                query.Parameters.AddWithValue("@tipoConta", tipoConta);
                 query.ExecuteNonQuery();
             }
             catch (Exception e)
@@ -88,6 +86,42 @@ namespace WebServiceEstacioPay
             return res;
         }
 
+        //Metodo para inseir um cliente
+        [WebMethod]
+        [ScriptMethod(ResponseFormat = ResponseFormat.Json)]
+
+        public string InserirClinte(string cpf, string nome,string telefone, DateTime dataNascimento, string cnh, string email)
+        {
+            string res = "Inserido com sucesso!";
+            SqlConnection con =
+            new SqlConnection("Server=ESN509VMSSQL;Database=estaciopay ;User id=Aluno;Password=Senai1234");
+
+            //Inserir imagem
+            try
+            {
+                con.Open();
+                SqlCommand query =
+                   new SqlCommand("INSERT INTO Cliente VALUES(@cpf,@nome, @telefone, @dataNascimento,@cnh,@email)", con);
+                   query.Parameters.AddWithValue("@cpf", cpf);
+                   query.Parameters.AddWithValue("@nome", nome);
+                   query.Parameters.AddWithValue("@telefone", telefone);
+                   query.Parameters.AddWithValue("@dataNascimento", dataNascimento);
+                   query.Parameters.AddWithValue("@cnh", cnh);
+                   query.Parameters.AddWithValue("@email", email);
+                   query.ExecuteNonQuery();
+
+
+            }
+            catch(Exception e)
+            {
+                res = e.Message;
+            }
+
+            if (con.State == System.Data.ConnectionState.Open)
+                con.Close();
+            return res;
+
+        }
 
 
 
