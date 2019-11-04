@@ -60,9 +60,10 @@ namespace WebServiceEstacioPay
         //Metodo para cadastra contas
         [WebMethod]
         [ScriptMethod(ResponseFormat = ResponseFormat.Json)]
-        public string Inserir(string email, string senha, string tipoConta)
+        public void Inserir(string email, string senha, string tipoConta)
         {
-            string res = "Inserido com sucesso!";
+            bool res = false;
+
             SqlConnection con =
                new SqlConnection("Server=ESN509VMSSQL;Database=estaciopay ;User id=Aluno;Password=Senai1234");
             try
@@ -74,38 +75,44 @@ namespace WebServiceEstacioPay
                 query.Parameters.AddWithValue("@senha", senha);
                 query.Parameters.AddWithValue("@tipoConta", tipoConta);
                 query.ExecuteNonQuery();
+                res = true;
+
             }
             catch (Exception e)
             {
-                res = e.Message;
+                res = false;
             }
 
             if (con.State == System.Data.ConnectionState.Open)
                 con.Close();
 
-            return res;
+            Context.Response.ContentType = "application/json; charset=utf-8";
+            Context.Response.Write(new JavaScriptSerializer().Serialize(res));
+
         }
 
         //Metodo para inseir um cliente
         [WebMethod]
         [ScriptMethod(ResponseFormat = ResponseFormat.Json)]
 
-        public string InserirClinte(string cpf, string nome,string telefone, DateTime dataNascimento, string cnh, string email)
+        public string InserirClinte(string cpf,string imagem, string nome,string telefone, DateTime dataNascimento, string cnh, string email)
         {
             string res = "Inserido com sucesso!";
             SqlConnection con =
             new SqlConnection("Server=ESN509VMSSQL;Database=estaciopay ;User id=Aluno;Password=Senai1234");
-
-            //Inserir imagem
+ 
+           
+           
             try
             {
                 con.Open();
                 SqlCommand query =
-                   new SqlCommand("INSERT INTO Cliente VALUES(@cpf,@nome, @telefone, @dataNascimento,@cnh,@email)", con);
+                   new SqlCommand("INSERT INTO Cliente VALUES(@cpf,null,@nome, @telefone, @dataNascimento,@cnh,@email)", con);
                    query.Parameters.AddWithValue("@cpf", cpf);
+                   //query.Parameters.AddWithValue("@imagem", img);
                    query.Parameters.AddWithValue("@nome", nome);
                    query.Parameters.AddWithValue("@telefone", telefone);
-                   query.Parameters.AddWithValue("@dataNascimento", dataNascimento);
+                   query.Parameters.AddWithValue("@dataNascimento",dataNascimento);
                    query.Parameters.AddWithValue("@cnh", cnh);
                    query.Parameters.AddWithValue("@email", email);
                    query.ExecuteNonQuery();
@@ -123,8 +130,119 @@ namespace WebServiceEstacioPay
 
         }
 
+        // Inserir estacionamento////////////////////////////////////////////////////////
+        [WebMethod]
+        [ScriptMethod(ResponseFormat = ResponseFormat.Json)]
+        public string InserirEstacionamento(string cnpj, string razao, string nomeFantasia, string bairro, string rua, int numero, string cidade, int vagas, string email, float horaUm, float horaDois)
+        {
+            string res = "Inserido com sucesso!";
+            SqlConnection con =
+            new SqlConnection("Server=ESN509VMSSQL;Database=estaciopay ;User id=Aluno;Password=Senai1234");
 
 
+            //Inserir imagem
+            try
+            {
+                con.Open();
+                SqlCommand query =
+                   new SqlCommand("INSERT INTO Estacionamento VALUES(@cnpj,@razao,@nomeFantasia, @bairro, @rua,@numero,@cidade,@vagas,@email,@horaUm,@horaDois)", con);
+                query.Parameters.AddWithValue("@cnpj", cnpj);
+                query.Parameters.AddWithValue("@razao", razao);
+                query.Parameters.AddWithValue("@nomeFantasia", nomeFantasia);
+                query.Parameters.AddWithValue("@bairro", bairro);
+                query.Parameters.AddWithValue("@rua", rua);
+                query.Parameters.AddWithValue("@numero", numero);
+                query.Parameters.AddWithValue("@cidade", cidade);
+                query.Parameters.AddWithValue("@vagas", vagas);
+                query.Parameters.AddWithValue("@email", email);
+                query.Parameters.AddWithValue("@horaUm", horaUm);
+                query.Parameters.AddWithValue("@horaDois", horaDois);
+                query.ExecuteNonQuery();
+
+
+            }
+            catch (Exception e)
+            {
+                res = e.Message;
+            }
+
+            if (con.State == System.Data.ConnectionState.Open)
+                con.Close();
+            return res;
+
+        }
+        //Recuperando estacionamento
+        [WebMethod]
+        [ScriptMethod(ResponseFormat = ResponseFormat.Json)]
+        public string GerarQrCode(string cnpj) {
+            string res;
+            SqlConnection con =
+                new SqlConnection("Server=ESN509VMSSQL;Database=estaciopay ;User id=Aluno;Password=Senai1234");
+            try {
+                con.Open();
+                SqlCommand query =
+                new SqlCommand("SELECT Cnpj FROM Estacionamento WHERE Cnpj =@cnpj; ", con);
+                query.Parameters.AddWithValue("@cnpj", cnpj);
+                SqlDataReader leitor = query.ExecuteReader();
+
+                res = cnpj;
+            } catch (Exception e) {
+                res = "Error";
+            }
+
+            if (con.State == ConnectionState.Open)
+                con.Close();
+            return res;
+
+            //Configura a saída do HTML como JSON e a saída de caracteres como UTF-8 (por causa do navegador)
+            Context.Response.ContentType = "application/json; charset=utf-8";
+            Context.Response.Write(new JavaScriptSerializer().Serialize(res));
+        }
+
+
+        //Cadastrar Veículos
+        /*
+        [WebMethod]
+        [ScriptMethod(ResponseFormat = ResponseFormat.Json)]
+        public string cadastrarVeiculo(string placa, string marca, string modelo, string ano,string cor, string cidade, int vagas, string email, float horaUm, float horaDois)
+        {
+            string res = "Inserido com sucesso!";
+            SqlConnection con =
+            new SqlConnection("Server=ESN509VMSSQL;Database=estaciopay ;User id=Aluno;Password=Senai1234");
+
+
+            //Inserir imagem
+            try
+            {
+                con.Open();
+                SqlCommand query =
+                   new SqlCommand("INSERT INTO Estacionamento VALUES(@cnpj,@razao,@nomeFantasia, @bairro, @rua,@numero,@cidade,@vagas,@email,@horaUm,@horaDois)", con);
+                query.Parameters.AddWithValue("@cnpj", cnpj);
+                query.Parameters.AddWithValue("@razao", razao);
+                query.Parameters.AddWithValue("@nomeFantasia", nomeFantasia);
+                query.Parameters.AddWithValue("@bairro", bairro);
+                query.Parameters.AddWithValue("@rua", rua);
+                query.Parameters.AddWithValue("@numero", numero);
+                query.Parameters.AddWithValue("@cidade", cidade);
+                query.Parameters.AddWithValue("@vagas", vagas);
+                query.Parameters.AddWithValue("@email", email);
+                query.Parameters.AddWithValue("@horaUm", horaUm);
+                query.Parameters.AddWithValue("@horaDois", horaDois);
+                query.ExecuteNonQuery();
+
+
+            }
+            catch (Exception e)
+            {
+                res = e.Message;
+            }
+
+            if (con.State == System.Data.ConnectionState.Open)
+                con.Close();
+            return res;
+
+        }
+        */
         //Login para estacionamento
 
         //[WebMethod]
