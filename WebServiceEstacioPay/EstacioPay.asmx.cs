@@ -187,7 +187,7 @@ namespace WebServiceEstacioPay
 
                 res = cnpj;
             } catch (Exception e) {
-                res = "Error";
+                res = "Error geral";
             }
 
             if (con.State == ConnectionState.Open)
