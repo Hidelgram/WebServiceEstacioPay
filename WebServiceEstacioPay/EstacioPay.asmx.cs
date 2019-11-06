@@ -199,8 +199,55 @@ namespace WebServiceEstacioPay
             Context.Response.Write(new JavaScriptSerializer().Serialize(res));
         }
 
+        //Metodo para validar pagamento
+        [WebMethod]
+        [ScriptMethod(ResponseFormat = ResponseFormat.Json)]
+        public void pagamento(string cpfCliente) {
 
-        //Cadastrar Veículos
+            bool resposta = false;
+            SqlConnection con =
+                new SqlConnection("Server=ESN509VMSSQL;Database=estaciopay ;User id=Aluno;Password=Senai1234");
+
+            try {
+                con.Open();
+                SqlCommand query =
+                new SqlCommand("SELECT *FROM CartaoCredito WHERE FK_cpfCliente =@cpfCliente; ", con);
+                query.Parameters.AddWithValue("@cpfCliente", cpfCliente);
+                SqlDataReader leitor = query.ExecuteReader();
+
+                resposta = true;
+
+               
+               
+            } catch(Exception e) {
+                resposta = false;
+            }
+
+        }
+        //Metodo para atualizar pagamentos
+        [WebMethod]
+        [ScriptMethod(ResponseFormat = ResponseFormat.Json)]
+        public string atualizarPagamento(DateTime horaSaida, string valorPago) {
+            string resultado="";
+            SqlConnection con =
+                new SqlConnection("Server=ESN509VMSSQL;Database=estaciopay ;User id=Aluno;Password=Senai1234");
+
+            try {
+                con.Open();
+                SqlCommand query =
+                new SqlCommand("UPDATE Relatorio SET HoraSaida=@horaSaida,ValorPago=@valorPago; ", con);
+                query.Parameters.AddWithValue("@horaSaida",horaSaida);
+                query.Parameters.AddWithValue("@valorPago", valorPago);
+                query.ExecuteNonQuery();
+
+                resultado = "Atualizado com Sucesso!!!";
+
+            } catch (Exception e) {
+                resultado = "Não foi atualizado!!!";
+            }
+
+            return resultado;
+        }
         /*
         [WebMethod]
         [ScriptMethod(ResponseFormat = ResponseFormat.Json)]

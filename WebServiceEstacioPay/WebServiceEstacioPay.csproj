@@ -125,6 +125,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App_Start\RouteConfig.cs" />
+    <Compile Include="atualizarPagamento.cs" />
     <Compile Include="EstacioPay.asmx.cs">
       <DependentUpon>EstacioPay.asmx</DependentUpon>
       <SubType>Component</SubType>
