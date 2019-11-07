@@ -53,7 +53,35 @@ namespace WebServiceEstacioPay
             Context.Response.Write(new JavaScriptSerializer().Serialize(res));
         }
 
+        [WebMethod]
+        [ScriptMethod(ResponseFormat = ResponseFormat.Json)]
+        public void VerificarConta(string email) {
+            string res ="";
+            SqlConnection con =
+                new SqlConnection("Server=ESN509VMSSQL;Database=estaciopay ;User id=Aluno;Password=Senai1234");
+            try {
+                con.Open();
+                SqlCommand query =
+                new SqlCommand("select TipoConta from usuario where email=@email", con);
+                query.Parameters.AddWithValue("@email", email);
+                SqlDataReader leitor = query.ExecuteReader();
 
+                while (leitor.Read()) {
+                    res = leitor["TipoConta"].ToString();
+                }
+               
+
+            } catch (Exception e) {
+               res =  "Invalido";
+            }
+
+            if (con.State == ConnectionState.Open)
+                con.Close();
+
+            //Configura a saída do HTML como JSON e a saída de caracteres como UTF-8 (por causa do navegador)
+            Context.Response.ContentType = "application/json; charset=utf-8";
+            Context.Response.Write(new JavaScriptSerializer().Serialize(res));
+        }
 
 
 
@@ -95,21 +123,20 @@ namespace WebServiceEstacioPay
         [WebMethod]
         [ScriptMethod(ResponseFormat = ResponseFormat.Json)]
 
-        public string InserirClinte(string cpf,string imagem, string nome,string telefone, DateTime dataNascimento, string cnh, string email)
+        public string InserirClinte(string cpf,byte imagem, string nome,string telefone, DateTime dataNascimento, string cnh, string email)
         {
             string res = "Inserido com sucesso!";
             SqlConnection con =
             new SqlConnection("Server=ESN509VMSSQL;Database=estaciopay ;User id=Aluno;Password=Senai1234");
  
-           
-           
+          
             try
             {
                 con.Open();
                 SqlCommand query =
-                   new SqlCommand("INSERT INTO Cliente VALUES(@cpf,null,@nome, @telefone, @dataNascimento,@cnh,@email)", con);
+                   new SqlCommand("INSERT INTO Cliente VALUES(@cpf,@imagem,@nome, @telefone, @dataNascimento,@cnh,@email)", con);
                    query.Parameters.AddWithValue("@cpf", cpf);
-                   //query.Parameters.AddWithValue("@imagem", img);
+                   query.Parameters.AddWithValue("@imagem", imagem);
                    query.Parameters.AddWithValue("@nome", nome);
                    query.Parameters.AddWithValue("@telefone", telefone);
                    query.Parameters.AddWithValue("@dataNascimento",dataNascimento);
