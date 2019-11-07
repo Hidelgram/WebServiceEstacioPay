@@ -171,6 +171,8 @@ namespace WebServiceEstacioPay
             return res;
 
         }
+
+
         //Recuperando estacionamento
         [WebMethod]
         [ScriptMethod(ResponseFormat = ResponseFormat.Json)]
@@ -198,6 +200,8 @@ namespace WebServiceEstacioPay
             Context.Response.ContentType = "application/json; charset=utf-8";
             Context.Response.Write(new JavaScriptSerializer().Serialize(res));
         }
+
+
 
         //Metodo para validar pagamento
         [WebMethod]
@@ -248,6 +252,36 @@ namespace WebServiceEstacioPay
 
             return resultado;
         }
+
+        //Metodo para receber a localização do estacionamento
+
+        [WebMethod]
+        [ScriptMethod(ResponseFormat = ResponseFormat.Json)]
+        public string localizacao(float latitude, float longitude,string cnpj) {
+            string res = "Inserido com sucesso!";
+            SqlConnection con =
+            new SqlConnection("Server=ESN509VMSSQL;Database=estaciopay ;User id=Aluno;Password=Senai1234");
+
+            try {
+                con.Open();
+                SqlCommand query =
+                   new SqlCommand("INSERT INTO localizacao VALUES(@latitude,@longitude,@cnpj)", con);
+                   query.Parameters.AddWithValue("@latitude",latitude);
+                   query.Parameters.AddWithValue("@longitude",longitude);
+                   query.Parameters.AddWithValue("@cnpj",cnpj); 
+                   query.ExecuteNonQuery(); 
+
+
+            } catch (Exception e) {
+                res = e.Message;
+            }
+
+            if (con.State == System.Data.ConnectionState.Open)
+                con.Close();
+            return res;
+
+        }
+
         /*
         [WebMethod]
         [ScriptMethod(ResponseFormat = ResponseFormat.Json)]
