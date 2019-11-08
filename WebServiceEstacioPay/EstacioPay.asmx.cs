@@ -167,7 +167,7 @@ namespace WebServiceEstacioPay
             new SqlConnection("Server=ESN509VMSSQL;Database=estaciopay ;User id=Aluno;Password=Senai1234");
 
 
-            //Inserir imagem
+           
             try
             {
                 con.Open();
@@ -300,6 +300,100 @@ namespace WebServiceEstacioPay
 
 
             } catch (Exception e) {
+                res = e.Message;
+            }
+
+            if (con.State == System.Data.ConnectionState.Open)
+                con.Close();
+            return res;
+
+        }
+
+        //Inserir imagem
+
+        [WebMethod]
+        [ScriptMethod(ResponseFormat = ResponseFormat.Json)]
+        public void SalvarImagem(string titulo, string cnpj, byte[] imagebytes)
+        {
+
+            SqlConnection con = new SqlConnection("Server = ESN509VMSSQL; Database = estaciopay; User Id = Aluno; Password = Senai1234");
+
+            con.Open();
+
+            SqlCommand query = new SqlCommand("Insert into Arquivos VALUES(@img,@titulo,@cnpj)", con);
+            query.Parameters.AddWithValue("@img", imagebytes);
+            query.Parameters.AddWithValue("@titulo", titulo);
+            query.Parameters.AddWithValue("@cnpj", cnpj);
+            query.ExecuteNonQuery();
+            con.Close();
+
+
+
+        }
+
+
+        //Metodo para cadastrar veiculos
+
+        [WebMethod]
+        [ScriptMethod(ResponseFormat = ResponseFormat.Json)]
+
+        public string Inserirveiculo(string placa, string marca, string modelo, string ano, string cor, string cnpj)
+        {
+            string res = "Inserido com sucesso!";
+            SqlConnection con =
+            new SqlConnection("Server=ESN509VMSSQL;Database=estaciopay ;User id=Aluno;Password=Senai1234");
+            try
+            {
+
+                con.Open();
+                SqlCommand query =
+                   new SqlCommand("INSERT INTO Veiculo VALUES(@placa,@marca, @modelo,@ano,@cor,@cnpj)", con);
+                query.Parameters.AddWithValue("@placa", placa);
+                query.Parameters.AddWithValue("@marca", marca);
+                query.Parameters.AddWithValue("@modelo", modelo);
+                query.Parameters.AddWithValue("@ano", ano);
+                query.Parameters.AddWithValue("@cor", cor);
+                query.Parameters.AddWithValue("@cnpj", cnpj);
+                query.ExecuteNonQuery();
+
+
+            }
+            catch (Exception e)
+            {
+                res = e.Message;
+            }
+            if (con.State == System.Data.ConnectionState.Open)
+                con.Close();
+            return res;
+        }
+
+       /// Inserir cartão de crédito
+        [WebMethod]
+        [ScriptMethod(ResponseFormat = ResponseFormat.Json)]
+        public string cartaoCredito(string numeroCartao, string nomeCartao, string nomeCliente, string codigoSeguranca, DateTime dataVencimento, string cpfCliente)
+        {
+            string res = "Inserido com sucesso!";
+            SqlConnection con =
+            new SqlConnection("Server=ESN509VMSSQL;Database=estaciopay ;User id=Aluno;Password=Senai1234");
+
+
+            try
+            {
+                con.Open();
+                SqlCommand query =
+                   new SqlCommand("INSERT INTO CartaoCredito VALUES(@numeroCartao,@nomeCartao, @nomeCliente, @codigoSeguranca,@dataVencimento,@cpfCliente)", con);
+                query.Parameters.AddWithValue("@numeroCartao", numeroCartao);
+                query.Parameters.AddWithValue("@nomeCartao", nomeCartao);
+                query.Parameters.AddWithValue("@nomeCliente", nomeCliente);
+                query.Parameters.AddWithValue("@codigoSeguranca", codigoSeguranca);
+                query.Parameters.AddWithValue("@dataVencimento", dataVencimento);
+                query.Parameters.AddWithValue("@cpfCliente", cpfCliente);
+                query.ExecuteNonQuery();
+
+
+            }
+            catch (Exception e)
+            {
                 res = e.Message;
             }
 
