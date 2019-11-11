@@ -38,19 +38,28 @@ namespace WebServiceEstacioPay
                 query.Parameters.AddWithValue("@senha", senha);
                 SqlDataReader leitor = query.ExecuteReader();
 
-                res = leitor.HasRows;
+                if (leitor.HasRows) {
+                    while (leitor.Read()) {
+                        Context.Response.ContentType = "application/json; charset=utf-8";
+                        Context.Response.Write(new JavaScriptSerializer().Serialize(leitor.GetString(3)));
+                    }
+                }else {
+                    Context.Response.ContentType = "application/json; charset=utf-8";
+                    Context.Response.Write(new JavaScriptSerializer().Serialize(res));
+                }
+
+               
             }
             catch (Exception e)
             {
                 res = false;
+                Context.Response.ContentType = "application/json; charset=utf-8";
+                Context.Response.Write(new JavaScriptSerializer().Serialize(res));
             }
 
             if (con.State == ConnectionState.Open)
                 con.Close();
-
-            //Configura a saída do HTML como JSON e a saída de caracteres como UTF-8 (por causa do navegador)
-            Context.Response.ContentType = "application/json; charset=utf-8";
-            Context.Response.Write(new JavaScriptSerializer().Serialize(res));
+            
         }
 
         [WebMethod]
