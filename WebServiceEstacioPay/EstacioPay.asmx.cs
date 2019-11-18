@@ -79,7 +79,7 @@ namespace WebServiceEstacioPay
                     res = leitor["TipoConta"].ToString();
                 }
                
-
+                
             } catch (Exception e) {
                res =  "Invalido";
             }
@@ -181,7 +181,7 @@ namespace WebServiceEstacioPay
             {
                 con.Open();
                 SqlCommand query =
-                   new SqlCommand("INSERT INTO Estacionamento VALUES(@cnpj,@razao,@nomeFantasia, @bairro, @rua,@numero,@cidade,@vagas,@email,@horaUm,@horaDois)", con);
+                   new SqlCommand("INSERT INTO Estacionamento VALUES(@cnpj,@razao,@nomeFantasia,@bairro,@rua,@numero,@cidade,@vagas,@email,@horaUm,@horaDois)", con);
                 query.Parameters.AddWithValue("@cnpj", cnpj);
                 query.Parameters.AddWithValue("@razao", razao);
                 query.Parameters.AddWithValue("@nomeFantasia", nomeFantasia);
@@ -207,23 +207,60 @@ namespace WebServiceEstacioPay
             return res;
 
         }
+        //Recuperando campo de estacionamento
+
+        [WebMethod]
+        [ScriptMethod(ResponseFormat = ResponseFormat.Json)]
+        public void Recuperadados(string email) {
+            string res;
+            Models.Estacionamento estac;
+            SqlConnection con =
+                new SqlConnection("Server=ESN509VMSSQL;Database=estaciopay ;User id=Aluno;Password=Senai1234");
+            try {
+                con.Open();
+                SqlCommand query =
+                new SqlCommand("SELECT *FROM Estacionamento WHERE FK_Email=@email;", con);
+                query.Parameters.AddWithValue("@email", email);
+                SqlDataReader leitor = query.ExecuteReader();
+
+                leitor.Read();
+
+                estac = new Models.Estacionamento(leitor.GetString(1), leitor.GetString(2), leitor.GetString(3), leitor.GetString(4), leitor.GetString(5), leitor.GetInt32(6),
+                    leitor.GetString(7), leitor.GetInt32(8), leitor.GetString(9), leitor.GetDecimal(10), leitor.GetDecimal(11));
+
+
+                //Configura a saída do HTML como JSON e a saída de caracteres como UTF-8 (por causa do navegador)
+                Context.Response.ContentType = "application/json; charset=utf-8";
+                Context.Response.Write(new JavaScriptSerializer().Serialize(estac));
+
+            } catch (Exception e) {
+                res = e.Message.ToString();
+                Context.Response.ContentType = "application/json; charset=utf-8";
+                Context.Response.Write(new JavaScriptSerializer().Serialize(res));
+            }
+
+            if (con.State == ConnectionState.Open)
+                con.Close();
+
+        }
+
 
 
         //Recuperando estacionamento
         [WebMethod]
         [ScriptMethod(ResponseFormat = ResponseFormat.Json)]
-        public string GerarQrCode(string cnpj) {
+        public string GerarQrCode(string email) {
             string res;
             SqlConnection con =
                 new SqlConnection("Server=ESN509VMSSQL;Database=estaciopay ;User id=Aluno;Password=Senai1234");
             try {
                 con.Open();
                 SqlCommand query =
-                new SqlCommand("SELECT Cnpj FROM Estacionamento WHERE Cnpj =@cnpj; ", con);
-                query.Parameters.AddWithValue("@cnpj", cnpj);
+                new SqlCommand("SELECT Cnpj FROM Estacionamento WHERE FK_Email=@email; ", con);
+                query.Parameters.AddWithValue("@email", email);
                 SqlDataReader leitor = query.ExecuteReader();
 
-                res = cnpj;
+                res = email;
             } catch (Exception e) {
                 res = "Error geral";
             }
