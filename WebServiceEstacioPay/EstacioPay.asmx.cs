@@ -301,6 +301,79 @@ namespace WebServiceEstacioPay
             }
 
         }
+
+        //Metodo de entreda do veículo no estacionamento
+        //Esse metodo será utilizado quando o cliente der entrada no estacionamento
+       
+
+      
+        [WebMethod]
+        [ScriptMethod(ResponseFormat = ResponseFormat.Json)]
+        public string entradaDoVeiculo(DateTime DataRelatorio,DateTime HoraEntrega,DateTime HoraSaida,float ValorPago,string FK_placaVeiculo,string FK_cnpjEstacioR) {
+            string resultado = "";
+           
+
+            SqlConnection con = new SqlConnection("Server=ESN509VMSSQL;Database=estaciopay ;User id=Aluno;Password=Senai1234");
+            try {
+
+                con.Open();
+                SqlCommand query = new SqlCommand("INSERT INTO Relatorio VALUES(@DataRelatorio,@HoraEntrega,@HoraSaida,@ValorPago,@FK_placaVeiculo,@FK_cnpjEstacioR);",con);
+                query.Parameters.AddWithValue("@DataRelatorio",DataRelatorio);
+                query.Parameters.AddWithValue("@HoraEntrega", HoraEntrega);
+                query.Parameters.AddWithValue("@HoraSaida", HoraSaida);
+                query.Parameters.AddWithValue("@ValorPago", ValorPago);
+                query.Parameters.AddWithValue("@FK_placaVeiculo", FK_placaVeiculo);
+                query.Parameters.AddWithValue("@FK_cnpjEstacioR", FK_cnpjEstacioR);
+                query.ExecuteNonQuery();
+                
+                resultado = "Venda OK!!!";
+
+            } catch(Exception e) {
+                resultado = "Falha na compra";
+            }
+            return resultado;
+        }
+
+
+
+        //Metodo para retorna o relatorio de vendas
+        [WebMethod]
+        [ScriptMethod(ResponseFormat = ResponseFormat.Json)]
+        public void RecuperRelatórios(string placa) {
+            string res;
+            Models.Relatorios estac;
+            SqlConnection con =
+                new SqlConnection("Server=ESN509VMSSQL;Database=estaciopay ;User id=Aluno;Password=Senai1234");
+            try {
+                con.Open();
+                SqlCommand query =
+                new SqlCommand("SELECT *FROM Relatorio WHERE FK_placaVeiculo=@placa;", con);
+                query.Parameters.AddWithValue("@placa", placa);
+                SqlDataReader leitor = query.ExecuteReader();
+
+                leitor.Read();
+
+                estac = new Models.Relatorios(leitor.GetDateTime(1), leitor.GetDateTime(2), leitor.GetDateTime(3), leitor.GetDecimal(4), leitor.GetString(5), leitor.GetString(6));
+
+
+
+                //Configura a saída do HTML como JSON e a saída de caracteres como UTF-8 (por causa do navegador)
+                Context.Response.ContentType = "application/json; charset=utf-8";
+                Context.Response.Write(new JavaScriptSerializer().Serialize(estac));
+
+            } catch (Exception e) {
+                res = e.Message.ToString();
+                Context.Response.ContentType = "application/json; charset=utf-8";
+                Context.Response.Write(new JavaScriptSerializer().Serialize(res));
+            }
+
+            if (con.State == ConnectionState.Open)
+                con.Close();
+
+        }
+
+
+
         //Metodo para atualizar pagamentos
         [WebMethod]
         [ScriptMethod(ResponseFormat = ResponseFormat.Json)]
@@ -383,7 +456,7 @@ namespace WebServiceEstacioPay
         [WebMethod]
         [ScriptMethod(ResponseFormat = ResponseFormat.Json)]
 
-        public string Inserirveiculo(string placa, string marca, string modelo, string ano, string cor, string cnpj)
+        public string Inserirveiculo(string placa, string marca, string modelo, string ano, string cor, string FK_cpfClienteV)
         {
             string res = "Inserido com sucesso!";
             SqlConnection con =
@@ -393,13 +466,13 @@ namespace WebServiceEstacioPay
 
                 con.Open();
                 SqlCommand query =
-                   new SqlCommand("INSERT INTO Veiculo VALUES(@placa,@marca, @modelo,@ano,@cor,@cnpj)", con);
+                   new SqlCommand("INSERT INTO Veiculo VALUES(@placa,@marca, @modelo,@ano,@cor,@FK_cpfClienteV)", con);
                 query.Parameters.AddWithValue("@placa", placa);
                 query.Parameters.AddWithValue("@marca", marca);
                 query.Parameters.AddWithValue("@modelo", modelo);
                 query.Parameters.AddWithValue("@ano", ano);
                 query.Parameters.AddWithValue("@cor", cor);
-                query.Parameters.AddWithValue("@cnpj", cnpj);
+                query.Parameters.AddWithValue("@FK_cpfClienteV", FK_cpfClienteV);
                 query.ExecuteNonQuery();
 
 
